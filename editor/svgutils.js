@@ -345,20 +345,19 @@ svgedit.utilities.getPathBBox = function(path) {
 	var bounds = [[], []];
 	var start = seglist.getItem(0);
 	var P0 = [start.x, start.y];
-
+	bounds[0].push(P0[0]);
+	bounds[1].push(P0[1]);
+	
 	for(var i=0; i < tot; i++) {
 		var seg = seglist.getItem(i);
 
 		if(typeof seg.x == 'undefined') continue;
 
-		// Add actual points to limits
-		bounds[0].push(P0[0]);
-		bounds[1].push(P0[1]);
-		
+                // P3 is the end point
+                var P3 = [seg.x, seg.y];
 		if(seg.x1) {
 			var P1 = [seg.x1, seg.y1],
-				P2 = [seg.x2, seg.y2],
-				P3 = [seg.x, seg.y];
+				P2 = [seg.x2, seg.y2];
 
 			for(var j=0; j < 2; j++) {
 
@@ -391,11 +390,14 @@ svgedit.utilities.getPathBBox = function(path) {
 				var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
 				if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
 			}
-			P0 = P3;
-		} else {
-			bounds[0].push(seg.x);
-			bounds[1].push(seg.y);
 		}
+		
+		// add end point to limits
+		bounds[0].push(P3[0]);
+		bounds[1].push(P3[1]);
+		
+		// start point is now the end point
+		P0 = P3;
 	}
 	
 	var x = Math.min.apply(null, bounds[0]);
